@@ -47,11 +47,11 @@ class Registratvm:
                 action = input(
                     "Task not completed yet. Do you want to pause or continue? (pause/continue): "
                 ).lower()
-                if action == "pause" or "p":
+                if action == "pause" or action == "p":
                     self.pause_task(task, start_time)
-                elif action == "continue" or "c":
+                elif action == "continue" or action == "c":
                     self.continue_task(task, start_time)
-                elif action == "quit" or "q":
+                elif action == "quit" or action == "q":
                     break
                 else:
                     print("Invalid input. Please enter 'pause' or 'continue', or 'quit'.")

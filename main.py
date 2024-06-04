@@ -2,10 +2,9 @@
 
 import time
 import sqlite3
+import dotenv
 
 from datetime import datetime
-
-import dotenv
 from github import Github
 
 

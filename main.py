@@ -1,95 +1,83 @@
 #!/usr/bin/env python3
 
+import sys
 import time
-import sqlite3
+
 import dotenv
 
+# from collections import namedtuple
 from datetime import datetime
 from github import Github
 
-
 dotenv.load_dotenv()
 
-conn = sqlite3.connect("database.db")
-c = conn.cursor()
-c.execute(
-    """CREATE TABLE IF NOT EXISTS tasks (
-                id INTEGER PRIMARY KEY,
-                task TEXT,
-                duration INTEGER,
-                completed BOOLEAN DEFAULT 0,
-                completed_at TIMESTAMP
-            )"""
-)
-conn.commit()
 
-github_token = dotenv.get_key("./.env", "GITHUB_ACCESS_TOKEN")
-repo_name = dotenv.get_key("./.env", "GITHUB_REPO_NAME")
-g = Github(github_token)
-repo = g.get_user().get_repo(repo_name)
+# TODO: Add a database for data persistence?
+
+
+class GithubRepoManager:
+    def __init__(self, env_file_path="./.env"):
+        self.env_file_path = env_file_path
+        self.github_token = None
+        self.repo_name = None
+        self.repo = None
+        self.sub_dir_content = ""
+        self.initialize()
+        self.connect_to_repo()
+
+    def initialize(self):
+        self.github_token = dotenv.get_key(self.env_file_path, "GITHUB_ACCESS_TOKEN")
+        self.repo_name = dotenv.get_key(self.env_file_path, "GITHUB_REPO_NAME")
+        # TODO: Set encapsulation with regex pattern or options menu ["python", "math", "etc"]
+        while not self.sub_dir_content:
+            self.sub_dir_content = input("Subdirectory content: ").lower()
+
+    def connect_to_repo(self):
+        g = Github(self.github_token)
+        self.repo = g.get_user().get_repo(self.repo_name)
+
+    def commit_to_github(self, task: str, duration: int) -> None:
+        commit_message = f"Completed '{task}' in {duration} minutes."
+        content = f"Task: {task}\nDuration: {duration} minute(s)\nCompleted at: {datetime.now().strftime(
+            '%Y-%m-%d %H:%M:%S')}"
+        self.repo.create_file(
+            f"{datetime.now().strftime('%Y')}/{datetime.now().strftime('%b').lower()}/{self.sub_dir_content}/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt",
+            commit_message,
+            content
+        )
+        print("Data committed to GitHub successfully!")
 
 
 class Registratvm:
-    def __init__(self):
-        pass
+    def __init__(self, github_repo_manager: GithubRepoManager):
+        self.task: str = ""
+        self.duration: int = 0
+        self.github_repo_manager = github_repo_manager
 
     def start(self):
-        task = input("Enter task name: ").capitalize()
-        duration = int(input("Enter duration (minutes): "))
+        self.task = '-'.join(input("Enter task name: ").lower().split())
+        self.duration = int(input("Enter duration (minutes): "))
 
         start_time = time.time()
 
         while True:
             elapsed_time = time.time() - start_time
-            if elapsed_time >= duration * 60:
+            if elapsed_time >= self.duration * 60:
                 print("Task time elapsed.")
                 action = input(
-                    "Task not completed yet. Do you want to pause or continue? (pause/continue): "
+                    "[*] Persist (y/n): "
                 ).lower()
-                if action == "pause" or action == "p":
-                    self.pause_task(task, start_time)
-                elif action == "continue" or action == "c":
-                    self.continue_task(task, start_time)
-                elif action == "quit" or action == "q":
+                if action == "y":
+                    self.github_repo_manager.commit_to_github(task=self.task, duration=self.duration)
                     break
                 else:
-                    print("Invalid input. Please enter 'pause' or 'continue', or 'quit'.")
+                    print("Data not persisted")
+                    break
             else:
                 time.sleep(10)
 
-        elapsed_time = time.time() - start_time
-        self.record_to_database(task, int(elapsed_time / 60), completed=True)
 
-        # Commit data to GitHub
-        self.commit_to_github(task, int(elapsed_time / 60))
-
-    def record_to_database(self, task, duration, completed=False):
-        c.execute(
-            "INSERT INTO tasks (task, duration, completed, completed_at) VALUES (?, ?, ?, ?)",
-            (task, duration, completed, datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-        )
-        conn.commit()
-
-    def commit_to_github(self, task, duration):
-        commit_message = f"Completed '{task}' in {duration} minutes."
-        content = f"Task: {task}\nDuration: {duration} minutes\nCompleted at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        repo.create_file(
-            f"registratvm/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt",
-            commit_message,
-            content,
-        )
-        print("Data committed to GitHub successfully!")
-
-    def pause_task(self, task, start_time):
-        pause_start_time = time.time()
-        input("Task paused. Press Enter to continue...")
-        pause_end_time = time.time()
-        pause_duration = pause_end_time - pause_start_time
-        self.record_to_database(task, int(pause_duration / 60))
-
-    def continue_task(self, task, start_time):
-        pass
-
-
-registratvm = Registratvm()
+github_manager = GithubRepoManager()
+registratvm = Registratvm(github_manager)
 registratvm.start()
+sys.exit()

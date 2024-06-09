@@ -59,23 +59,17 @@ class Registratvm:
         self.task = "-".join(input("Enter task name: ").lower().split())
         self.duration = int(input("Enter duration (minutes): "))
 
-        start_time = time.time()
-
         while True:
-            elapsed_time = time.time() - start_time
-            if elapsed_time >= self.duration * 60:
-                print("Task time elapsed.")
-                action = input("[*] Persist (y/n): ").lower()
-                if action == "y":
-                    self.github_repo_manager.commit_to_github(
-                        task=self.task, duration=self.duration
-                    )
-                    break
-                else:
-                    print("Data not persisted")
-                    break
+
+            action = input("[*] Persist (y/n): ").lower()
+            if action == "y":
+                self.github_repo_manager.commit_to_github(
+                    task=self.task, duration=self.duration
+                )
+                break
             else:
-                time.sleep(10)
+                print("Data not persisted")
+                break
 
 
 if __name__ == "__main__":

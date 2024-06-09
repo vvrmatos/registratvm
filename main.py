@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import time
 from datetime import datetime
 
 import dotenv
@@ -32,11 +31,13 @@ class GithubRepoManager:
         while not self.sub_dir_content:
             self.sub_dir_content = input("Subdirectory content: ").lower()
 
-    def commit_to_github(self, task: str, duration: int) -> None:
+    def commit_to_github(self, task: str, short_description: str, duration: int) -> None:
         commit_message = f"Completed '{task}' in {duration} minutes."
         content = (
-            f"Task: {task}\nDuration: {duration} minute(s)\nCompleted at: "
-            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            f"Task: {task}\n"
+            f"Duration: {duration} minute(s)\n"
+            f"Description: {short_description}\n"
+            f"Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         )
         path = (
             f"{datetime.now().strftime('%Y')}/"
@@ -51,12 +52,14 @@ class GithubRepoManager:
 class Registratvm:
     def __init__(self, github_repo_manager: GithubRepoManager):
         self.task: str = ""
+        self.short_description = ""
         self.duration: int = 0
         self.github_repo_manager = github_repo_manager
 
     def start(self):
         github_manager.set_sub_dir_content()
-        self.task = "-".join(input("Enter task name: ").lower().split())
+        self.task = input("Enter task name: ").lower().replace(" ", "-")
+        self.short_description = input("Enter short description: ").lower()
         self.duration = int(input("Enter duration (minutes): "))
 
         while True:
@@ -64,7 +67,7 @@ class Registratvm:
             action = input("[*] Persist (y/n): ").lower()
             if action == "y":
                 self.github_repo_manager.commit_to_github(
-                    task=self.task, duration=self.duration
+                    task=self.task, duration=self.duration, short_description=self.short_description
                 )
                 break
             else:

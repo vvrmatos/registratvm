@@ -28,7 +28,7 @@ To install Registratvm, follow these steps:
 2. Navigate to the project directory:
 
     ```bash
-    cd Registratvm
+    cd registratvm
     ```
 
 3. Install dependencies:

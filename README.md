@@ -66,10 +66,10 @@ To compile registratvm into an executable, you can use py2app. Here's how:
     cd registratvm
     ```
 
-2. Run py2app:
+2. Run pyinstaller:
 
     ```bash
-    python setup.py py2app
+    pyinstaller --onefile main.py
     ```
 
 This will generate a standalone application in the `dist` directory.

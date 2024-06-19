@@ -1,3 +1,4 @@
+python-dotenv
 aiohttp==3.9.5
 aiosignal==1.3.1
 altgraph==0.17.4
@@ -9,6 +10,7 @@ click==8.1.7
 cryptography==42.0.7
 Deprecated==1.2.14
 frozenlist==1.4.1
+github @ git+https://github.com/VarMonke/Github-Api-Wrapper@a1ef2e96f0f5df77340de69e9fe66c10410284cb
 idna==3.7
 macholib==1.16.3
 modulegraph==0.19.6
@@ -29,4 +31,3 @@ shiv==1.0.6
 typing_extensions==4.12.1
 urllib3==2.2.1
 wrapt==1.16.0
-yarl==1.9.4

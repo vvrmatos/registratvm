@@ -2,9 +2,8 @@
 
 import sys
 from datetime import datetime
-
-import dotenv
 from github import Github
+import dotenv
 
 dotenv.load_dotenv()
 

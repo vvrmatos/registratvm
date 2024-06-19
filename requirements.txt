@@ -10,7 +10,7 @@ click==8.1.7
 cryptography==42.0.7
 Deprecated==1.2.14
 frozenlist==1.4.1
-github@git+https://github.com/vvrmatos/Github-Api-Wrapper@a1ef2e96f0f5df77340de69e9fe66c10410284cb
+github @ git+https://github.com/vvrmatos/Github-Api-Wrapper@a1ef2e96f0f5df77340de69e9fe66c10410284cb
 idna==3.7
 macholib==1.16.3
 modulegraph==0.19.6

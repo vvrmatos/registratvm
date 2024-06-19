@@ -22,7 +22,7 @@ class GithubRepoManager:
     def initialize(self):
         self.github_token = dotenv.get_key(self.env_file_path, "GITHUB_ACCESS_TOKEN")
         self.repo_name = dotenv.get_key(self.env_file_path, "GITHUB_REPO_NAME")
-    
+
     def connect_to_repo(self):
         g = Github(self.github_token)
         self.repo = g.get_user().get_repo(self.repo_name)
